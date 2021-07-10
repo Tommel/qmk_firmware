@@ -54,12 +54,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 };
 
+#define USE_KEYS(_left_, _right_) \
+  if (clockwise)                  \
+    tap_code(_right_);            \
+  else                            \
+    tap_code(_left_)
+
+#define HAS_MOD_MASK(_which_) ((get_mods() & MOD_BIT(_which_)) == MOD_BIT(_which_))
 
 bool encoder_update_user(uint8_t index, bool clockwise) {
-    if (clockwise) {
-      tap_code(KC_VOLU);
-    } else {
-      tap_code(KC_VOLD);
-    }
+    if (HAS_MOD_MASK(MOD_MASK_CTRL))
+      USE_KEYS(KC_Z, KC_Y);
+    else if(HAS_MOD_MASK(MOD_MASK_SHIFT))
+      USE_KEYS(KC_DOWN, KC_UP);
+    else
+      USE_KEYS(KC_VOLD, KC_VOLU);
+
     return true;
 }
+
+#undef HAS_MOD_MASK
+#undef USE_KEYS
